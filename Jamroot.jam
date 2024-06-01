@@ -1,0 +1,51 @@
+import testing ;
+import package ;
+
+using gcc ;
+
+lib boost_unit_test_framework ;
+lib boost_program_options ;
+
+project haproxy-load-daemon : requirements
+	<cxxstd>23
+	<linkflags>-Wl,-z,defs
+	<variant>release:<lto>on-thin
+	<variant>debug:<warnings>pedantic
+	<variant>debug:<warnings-as-errors>on
+	<variant>debug:<cflags>-Wnon-virtual-dtor
+	<variant>debug:<cflags>-Wcast-align
+	<variant>debug:<cflags>-Wunused
+	<variant>debug:<cflags>-Woverloaded-virtual
+	<variant>debug:<cflags>-Wpedantic
+	<variant>debug:<cflags>-Wconversion
+	<variant>debug:<cflags>-Wsign-conversion
+	<variant>debug:<cflags>-Wnull-dereference
+	<variant>debug:<cflags>-Wdouble-promotion
+	<variant>debug:<cflags>-Wformat=2
+	<toolset>gcc,<variant>debug:<cflags>-Wold-style-cast
+	<toolset>gcc,<variant>debug:<cflags>-Wduplicated-cond
+	<toolset>gcc,<variant>debug:<cflags>-Wduplicated-branches
+	<toolset>gcc,<variant>debug:<cflags>-Wlogical-op
+	<toolset>gcc,<variant>debug:<cflags>-Wuseless-cast
+	;
+
+lib haproxy-load :
+	haproxy-load.cpp
+	:
+	<link>static
+	;
+
+exe haproxy-load-daemon :
+	haproxy-load-daemon.cpp
+	:
+	<library>haproxy-load
+	<library>boost_program_options
+	;
+
+run test-haproxy-load.cpp : : :
+	<library>haproxy-load
+	<library>boost_unit_test_framework
+	<define>BOOST_TEST_DYN_LINK
+	;
+
+package.install install : : haproxy-load-daemon ;
