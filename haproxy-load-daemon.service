@@ -1,0 +1,10 @@
+[Unit]
+Description=HAProxy Load Daemon
+After=network.target
+
+[Service]
+ExecStart=/usr/bin/haproxy-load-daemon -p 1234
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target

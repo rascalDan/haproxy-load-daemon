@@ -1,5 +1,6 @@
 import testing ;
 import package ;
+import stage ;
 
 using gcc ;
 
@@ -27,6 +28,7 @@ project haproxy-load-daemon : requirements
 	<toolset>gcc,<variant>debug:<cflags>-Wduplicated-branches
 	<toolset>gcc,<variant>debug:<cflags>-Wlogical-op
 	<toolset>gcc,<variant>debug:<cflags>-Wuseless-cast
+	<install-default-prefix>/usr
 	;
 
 lib haproxy-load :
@@ -48,4 +50,15 @@ run test-haproxy-load.cpp : : :
 	<define>BOOST_TEST_DYN_LINK
 	;
 
-package.install install : : haproxy-load-daemon ;
+package.add-path-option systemd : lib/systemd/system : prefix ;
+rule get-systemd-path ( )
+{
+	local paths = [ package.paths $(__name__) ] ;
+	return [ $(paths).get systemd ] ;
+}
+path-constant systemd-path : [ get-systemd-path ] ;
+
+alias install : install-bin install-unit ;
+explicit install install-unit ;
+package.install install-bin : : haproxy-load-daemon ;
+stage.install install-unit : haproxy-load-daemon.service : <location>$(systemd-path) ;
