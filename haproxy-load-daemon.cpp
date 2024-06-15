@@ -37,7 +37,7 @@ main(int argc, char ** argv)
 				// Base acceptable load
 				("base,b", po::value(&base)->default_value(hwcm(0.5)), "Base acceptable load for full service")
 				// Load minimum limit
-				("minimum,m", po::value(&limit)->default_value(hwcm(1.5)),
+				("minimum,m", po::value(&minimum)->default_value(hwcm(1.5)),
 						"Load limit for minimum new connections without disabling the backend")
 				// Load limit
 				("limit,l", po::value(&limit)->default_value(hwcm(2.5)),
