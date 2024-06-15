@@ -21,7 +21,7 @@ namespace haproxy_load {
 int
 main(int argc, char ** argv)
 {
-	double base {}, limit {}, crit {};
+	double base {}, minimum {}, limit {}, crit {};
 	boost::asio::ip::port_type port {};
 
 	try {
@@ -36,11 +36,14 @@ main(int argc, char ** argv)
 				("port,p", po::value(&port)->required(), "Listen port")
 				// Base acceptable load
 				("base,b", po::value(&base)->default_value(hwcm(0.5)), "Base acceptable load for full service")
+				// Load minimum limit
+				("minimum,m", po::value(&limit)->default_value(hwcm(1.5)),
+						"Load limit for minimum new connections without disabling the backend")
 				// Load limit
-				("limit,l", po::value(&limit)->default_value(hwcm(1.5)),
-						"Limit load for no further connections (Drain)")
+				("limit,l", po::value(&limit)->default_value(hwcm(2.5)),
+						"Load limit for no further connections (Drain)")
 				// Critical load limit
-				("crit,c", po::value(&crit)->default_value(hwcm(1.75)),
+				("crit,c", po::value(&crit)->default_value(hwcm(3.5)),
 						"Critical load for disconnecting existing clients (Maint)");
 
 		po::variables_map vm;
@@ -57,7 +60,7 @@ main(int argc, char ** argv)
 		return 1;
 	}
 
-	haproxy_load::Agent agent {base, limit, crit};
+	haproxy_load::Agent agent {base, minimum, limit, crit};
 
 	boost::asio::io_service io_service;
 

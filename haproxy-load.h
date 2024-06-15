@@ -10,11 +10,12 @@ namespace haproxy_load {
 	class Agent {
 	public:
 		double base {};
+		double minimum {};
 		double limit {};
 		double crit {};
 
 		[[nodiscard]] std::string getResponse(double load) const noexcept;
 
-		double scale {100. / (limit - base)};
+		double scale {100. / (minimum - base)};
 	};
 }
